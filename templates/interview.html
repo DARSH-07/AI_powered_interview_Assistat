@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+
+{% block title %}Interview - AI Interview Assistant{% endblock %}
+
+{% block content %}
+<div class="row h-100">
+    <!-- Tab Navigation -->
+    <div class="col-12 mb-3">
+        <ul class="nav nav-tabs" id="interviewTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="interviewee-tab" data-bs-toggle="tab" data-bs-target="#interviewee" type="button" role="tab" aria-controls="interviewee" aria-selected="true">
+                    <i class="fas fa-user me-2"></i>Interviewee
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="interviewer-tab" data-bs-toggle="tab" data-bs-target="#interviewer" type="button" role="tab" aria-controls="interviewer" aria-selected="false">
+                    <i class="fas fa-clipboard-list me-2"></i>Interviewer Dashboard
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="col-12">
+        <div class="tab-content" id="interviewTabContent">
+            
+            <!-- Interviewee Tab -->
+            <div class="tab-pane fade show active" id="interviewee" role="tabpanel" aria-labelledby="interviewee-tab">
+                <div class="row">
+                    <!-- Chat Interface -->
+                    <div class="col-lg-8">
+                        <div class="card interview-chat-card">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-comments me-2"></i>Interview Session
+                                    <span class="badge bg-light text-primary ms-2" id="questionCounter">Question 0/6</span>
+                                </h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <div id="chatMessages" class="chat-messages"></div>
+                                <div class="chat-input p-3 border-top">
+                                    <div id="timerDisplay" class="text-center mb-2 d-none">
+                                        <div class="timer-circle">
+                                            <span id="timerText">00:00</span>
+                                        </div>
+                                    </div>
+                                    <div class="input-group">
+                                        <textarea id="answerInput" class="form-control" placeholder="Type your answer here..." rows="3" disabled></textarea>
+                                        <button class="btn btn-primary" id="submitAnswer" disabled>
+                                            <i class="fas fa-paper-plane"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Side Panel -->
+                    <div class="col-lg-4">
+                        <!-- Resume Upload Section -->
+                        <div class="card mb-3" id="resumeUploadCard">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-file-upload me-2"></i>Upload Resume
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="upload-area" id="uploadArea">
+                                    <input type="file" id="resumeFile" accept=".pdf,.docx" style="display: none;">
+                                    <div class="text-center">
+                                        <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-2"></i>
+                                        <p class="mb-2">Drag & drop your resume here</p>
+                                        <p class="text-muted small">or click to browse (PDF/DOCX, max 5MB)</p>
+                                        <button class="btn btn-outline-primary" id="browseFiles">
+                                            <i class="fas fa-folder-open me-1"></i>Browse Files
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Candidate Info Section -->
+                        <div class="card mb-3 d-none" id="candidateInfoCard">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-user-circle me-2"></i>Your Information
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <form id="candidateInfoForm">
+                                    <div class="mb-3">
+                                        <label for="candidateName" class="form-label">Name *</label>
+                                        <input type="text" class="form-control" id="candidateName" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="candidateEmail" class="form-label">Email *</label>
+                                        <input type="email" class="form-control" id="candidateEmail" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="candidatePhone" class="form-label">Phone *</label>
+                                        <input type="tel" class="form-control" id="candidatePhone" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-success w-100">
+                                        <i class="fas fa-check me-1"></i>Start Interview
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Interview Progress -->
+                        <div class="card d-none" id="progressCard">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-chart-line me-2"></i>Progress
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="progress mb-3">
+                                    <div class="progress-bar" role="progressbar" id="interviewProgress" style="width: 0%"></div>
+                                </div>
+                                <div id="progressDetails">
+                                    <p class="mb-1"><strong>Current Score:</strong> <span id="currentScore">0</span>/60</p>
+                                    <p class="mb-1"><strong>Time Remaining:</strong> <span id="timeRemaining">--:--</span></p>
+                                    <p class="mb-0"><strong>Difficulty:</strong> <span id="currentDifficulty">--</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interviewer Dashboard Tab -->
+            <div class="tab-pane fade" id="interviewer" role="tabpanel" aria-labelledby="interviewer-tab">
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4><i class="fas fa-users me-2"></i>Candidates Dashboard</h4>
+                            <button class="btn btn-outline-primary" id="refreshDashboard">
+                                <i class="fas fa-sync-alt me-1"></i>Refresh
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="col-12 mb-3">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="searchCandidates" placeholder="Search by name or email...">
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" id="filterStatus">
+                                    <option value="">All Status</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="in_progress">In Progress</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="paused">Paused</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" id="sortBy">
+                                    <option value="score">Sort by Score</option>
+                                    <option value="date">Sort by Date</option>
+                                    <option value="name">Sort by Name</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Candidates List -->
+                    <div class="col-12">
+                        <div class="row" id="candidatesList">
+                            <!-- Candidates will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Candidate Details Modal -->
+<div class="modal fade" id="candidateModal" tabindex="-1" aria-labelledby="candidateModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="candidateModalLabel">
+                    <i class="fas fa-user-circle me-2"></i>Candidate Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="candidateDetails">
+                    <!-- Details will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/app.js' %}"></script>
+{% endblock %}
