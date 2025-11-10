@@ -182,14 +182,5 @@ python manage.py migrate
 4. Add tests if applicable
 5. Submit a pull request
 
-## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Support
-
-For issues and questions, please create an issue on GitHub or contact the development team.
-
----
-
-**Note**: This application requires a valid Google Gemini API key to function. Sign up at [Google AI Studio](https://makersuite.google.com/app/apikey) for an API key.
